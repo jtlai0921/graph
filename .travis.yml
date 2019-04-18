@@ -268,6 +268,10 @@ matrix:
       env: TOOLSET=clang COMPILER=clang++ CXXSTD=14,1z
       osx_image: xcode9.4.1
 
+cache: ccache
+
+before_install:
+  - export CACHE_NAME=$TRAVIS_OS_NAME-$COMPILER-$CXXSTD
 
 install:
   - BOOST_BRANCH=develop && [ "$TRAVIS_BRANCH" == "master" ] && BOOST_BRANCH=master || true
@@ -287,7 +291,7 @@ install:
 
 script:
   - |-
-    echo "using $TOOLSET : : $COMPILER ;" > ~/user-config.jam
+    echo "using $TOOLSET : : ccache $COMPILER ;" > ~/user-config.jam
   - IFS=','
   - for CXXLOCAL in $CXXSTD; do  (cd libs/config/test && ../../../b2 config_info_travis_install toolset=$TOOLSET cxxstd=$CXXLOCAL && ./config_info_travis && rm ./config_info_travis)  done
   - unset IFS
